@@ -1,0 +1,7 @@
+WITH first_order AS(
+SELECT *, RANK() OVER (partition by customer_id order by order_date) AS rank
+FROM Delivery)
+
+SELECT  ROUND(SUM(case when order_date = customer_pref_delivery_date then 100.00 else 0.00 end)/COUNT(order_date),2) AS immediate_percentage
+FROM first_order
+WHERE rank = 1
