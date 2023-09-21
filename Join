@@ -1,15 +1,19 @@
-SELECT s1.user_id, Isnull(ROUND(SUM(case action when 'confirmed' then 1 else 0 end)*1.0/ NULLIF(count(*),0),2),0) as 'confirmation_rate'
-FROM Signups s1 left JOIN Confirmations c1 ON s1.user_id = c1.user_id
+--find the confirmation rate of each user
+SELECT s1.user_id, ISNULL(ROUND(SUM(case action when 'confirmed' then 1 else 0 end)*1.0/ NULLIF(COUNT(*),0),2),0) AS 'confirmation_rate'
+FROM Signups s1 LEFT JOIN Confirmations c1 ON s1.user_id = c1.user_id
 GROUP BY s1.user_id
 
+--find the number of times each student attended each exam
 SELECT s1.student_id, student_name, s2.subject_name, ISNULL(count(e1.subject_name),0) AS attended_exams
 FROM Students s1 CROSS JOIN Subjects s2 LEFT JOIN Examinations e1 ON s1.student_id = e1.student_id AND s2.subject_name = e1.subject_name
 GROUP BY s1.student_id, student_name, s2.subject_name, e1.subject_name
 ORDER BY s1.student_id, s2.subject_name
 
+--find the average time each machine takes to complete a process
 SELECT a1.machine_id, ROUND(AVG(a1.timestamp - a2.timestamp), 3) AS processing_time
 FROM Activity a1 JOIN Activity a2 ON a1.machine_id = a2.machine_id AND a1.process_id = a2.process_id AND a1.activity_type = 'end' AND a2.activity_type = 'start'
 GROUP BY a1.machine_id
 
+--find all dates' Id with higher temperatures compared to its previous dates
 SELECT w1.id
 FROM WEATHER w1 JOIN WEATHER W2 ON DATEDIFF(day, w1.recordDate, w2.recordDate) = -1 AND w1.temperature > w2.temperature
