@@ -1,3 +1,4 @@
+--find the percentage of orders delivered in the preffered time for the first time orders of all customers
 WITH first_order AS(
 SELECT *, RANK() OVER (partition by customer_id order by order_date) AS rank
 FROM Delivery)
@@ -5,3 +6,14 @@ FROM Delivery)
 SELECT  ROUND(SUM(case when order_date = customer_pref_delivery_date then 100.00 else 0.00 end)/COUNT(order_date),2) AS immediate_percentage
 FROM first_order
 WHERE rank = 1
+
+--find the biggest number that appeared once
+WITH single_num AS 
+(SELECT num
+FROM MyNumbers 
+GROUP BY num
+HAVING COUNT(num)=1)
+
+SELECT MAX(num) as num
+FROM single_num
+
