@@ -4,6 +4,10 @@ SELECT    LEFT(trans_date, 7) AS MONTH,
           SUM(case state when 'approved' then 1 else 0 end) AS approved_count,
           SUM(amount) as trans_total_amount,
           SUM(case state when 'approved' then amount else 0 end) AS approved_total_amount
-     
 FROM Transactions 
 GROUP BY LEFT(trans_date, 7), country
+
+SELECT activity_date as day, count(distinct user_id) AS active_users
+FROM Activity
+GROUP BY activity_date
+HAVING activity_date BETWEEN '2019-06-28' AND '2019-07-27'
