@@ -1,0 +1,9 @@
+SELECT    LEFT(trans_date, 7) AS MONTH,
+          country, 
+          count(amount)as trans_COUNT,
+          SUM(case state when 'approved' then 1 else 0 end) AS approved_count,
+          SUM(amount) as trans_total_amount,
+          SUM(case state when 'approved' then amount else 0 end) AS approved_total_amount
+     
+FROM Transactions 
+GROUP BY LEFT(trans_date, 7), country
