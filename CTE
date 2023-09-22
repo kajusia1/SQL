@@ -1,5 +1,4 @@
 --find the percentage of orders delivered in the preffered time for the first time orders of all customers
-
 WITH first_order AS(
 SELECT *, RANK() OVER (partition by customer_id order by order_date) AS rank
 FROM Delivery)
@@ -8,17 +7,15 @@ SELECT  ROUND(SUM(case when order_date = customer_pref_delivery_date then 100.00
 FROM first_order
 WHERE rank = 1
 
+--find customers that bought all the products in the Product table.
+with desired_customer as( 
+  select customer_id, p.product_key, dense_rank() over (partition by customer_id order by p.product_key) as rnk
+  from Customer c right join Product p on c.product_key=p.product_key
+)
 
---find the biggest number that appeared once
-
-WITH single_num AS 
-(SELECT num
-FROM MyNumbers 
-GROUP BY num
-HAVING COUNT(num)=1)
-
-SELECT MAX(num) as num
-FROM single_num
+select distinct customer_id
+from desired_customer
+where rnk = (select count(product_key) from Product)
 
 --find info for the first year of every product sold
 --version 1 with rank
@@ -40,6 +37,16 @@ with first_year_sale as (
 
 select s.product_id, s.year as first_year, quantity, price
 from Sales s right join first_year_sale f on s.product_id = f.product_id and s.year = f.year 
+
+--find the biggest number that appeared once
+WITH single_num AS 
+(SELECT num
+FROM MyNumbers 
+GROUP BY num
+HAVING COUNT(num)=1)
+
+SELECT MAX(num) as num
+FROM single_num
 
 
 
