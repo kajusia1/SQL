@@ -1,3 +1,18 @@
+--find ids and the names of all managers (id in the column reports_to), the number of employees (and the average age) who report directly to them
+with managers as(
+  select reports_to as mng, rank() over (partition by reports_to order by employee_id) as rnk, age
+  from Employees
+  where reports_to is not null
+)
+, age_rnk as(
+  select mng, round(avg(age*1.00),0) as average_age, max(rnk) as reports_count
+  from managers
+  group by mng
+)
+
+select distinct m.mng as employee_id, name, reports_count, average_age
+from managers m left join age_rnk a on m.mng=a.mng left join Employees e on m.mng=e.employee_id --
+
 --find the confirmation rate of each user
 SELECT s1.user_id, ISNULL(ROUND(SUM(case action when 'confirmed' then 1 else 0 end)*1.0/ NULLIF(COUNT(*),0),2),0) AS 'confirmation_rate'
 FROM Signups s1 LEFT JOIN Confirmations c1 ON s1.user_id = c1.user_id
