@@ -9,3 +9,15 @@ END;
 select person_name
 from Queue
 where turn= @turn -1
+
+--more efficient verion with CTE
+with weight as (
+  select person_name, sum(weight) over(order by turn) as total_weight
+  from Queue
+)
+
+select top 1 person_name
+from weight
+where total_weight<=1000
+order by total_weight desc
+
