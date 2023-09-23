@@ -1,0 +1,11 @@
+--find the name of the last person that can fit on the bus without exceeding the weight limit
+DECLARE @turn INT = 2;
+
+WHILE (select sum(weight) from Queue where turn <= @turn) <= 1000
+BEGIN
+   SET @turn = @turn + 1;
+END;
+
+select person_name
+from Queue
+where turn= @turn -1
